@@ -1,0 +1,140 @@
+{
+  "info": {
+    "name": "Policy Management API - Sun Life / Manulife",
+    "description": "生产级保险保单管理系统接口集合（适合投递 Data 岗位）",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "1. Register User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"jingxu_admin\",\n  \"email\": \"jingxu@insurance.ca\",\n  \"role\": \"admin\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "2. Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {"key": "username", "value": "jingxu_admin"},
+                {"key": "password", "value": "Password123!"}
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Policies",
+      "item": [
+        {
+          "name": "3. Create Policy (Normal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}", "type": "text"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"policy_number\": \"SL2026001\",\n  \"customer_id\": 10001,\n  \"product_type\": \"Auto\",\n  \"premium\": 1250.75,\n  \"start_date\": \"2025-04-01\",\n  \"end_date\": \"2026-04-01\",\n  \"risk_score\": 45.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/policies/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "policies", ""]
+            }
+          }
+        },
+        {
+          "name": "4. Create Policy (High Risk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}", "type": "text"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"policy_number\": \"HIGH2026001\",\n  \"customer_id\": 10002,\n  \"product_type\": \"Life\",\n  \"premium\": 15000,\n  \"start_date\": \"2025-03-01\",\n  \"end_date\": \"2026-03-01\",\n  \"risk_score\": 92.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/policies/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "policies", ""]
+            }
+          }
+        },
+        {
+          "name": "5. List Policies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}", "type": "text"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/policies/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "policies", ""]
+            }
+          }
+        },
+        {
+          "name": "6. Bulk Upload CSV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}", "type": "text"}
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "test_policies.csv"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/policies/bulk-upload",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "policies", "bulk-upload"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
