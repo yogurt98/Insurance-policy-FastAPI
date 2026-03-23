@@ -25,8 +25,8 @@
 
 ```bash
 # 1. Clone the repository
-git clone <your-repo-url>
-cd policy-management-api
+git clone https://github.com/yogurt98/Insurance-policy-FastAPI.git
+cd project-FastAPI
 
 # 2. Start the services
 docker-compose up --build -d
