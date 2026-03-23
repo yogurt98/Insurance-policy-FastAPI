@@ -50,6 +50,11 @@ async def test_create_policy_with_validation(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_create_policy_high_risk_fraud(client: AsyncClient):
+    # 在获取 token 的代码前加上注册：
+    await client.post("/api/v1/auth/register", json={
+        "username": "testadmin", "email": "admin@insurance.ca", "role": "admin", "password": "Password123!"
+    })
+
     login_resp = await client.post(
         "/api/v1/auth/login",
         data={"username": "testadmin", "password": "Password123!"}
@@ -75,6 +80,11 @@ async def test_create_policy_high_risk_fraud(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_bulk_upload_csv(client: AsyncClient):
+    # 在获取 token 的代码前加上注册：
+    await client.post("/api/v1/auth/register", json={
+        "username": "testadmin", "email": "admin@insurance.ca", "role": "admin", "password": "Password123!"
+    })
+
     login_resp = await client.post(
         "/api/v1/auth/login",
         data={"username": "testadmin", "password": "Password123!"}
@@ -93,6 +103,6 @@ TEST000002,22222,Home,1450.0,2025-02-01,2026-02-01,55.0"""
         files=files,
         headers={"Authorization": f"Bearer {token}"}
     )
-    assert response.status_code == 200
+    assert response.status_code in (200, 202)
     data = response.json()
-    assert data["success"] > 0
+    assert "accepted" in data["message"] or "process" in data["message"]

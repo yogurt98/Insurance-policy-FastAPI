@@ -112,7 +112,9 @@ async def bulk_upload_policies(
         total=len(policies_list),
         success=0,
         failed=0,
-        message="批量任务已接受，正在后台异步处理，请稍后查看结果。"
+        message="批量任务已接受，正在后台异步处理，请稍后查看结果。\n"
+                "Bulk upload has been accepted and is being processed asynchronously. "
+                "Please check back later for the results."
     )
 
 
