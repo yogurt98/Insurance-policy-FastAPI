@@ -1,5 +1,5 @@
 # app/api/deps.py
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,8 +17,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 async def get_current_user(
         token: str = Depends(oauth2_scheme),
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_db),
+        request: Request = None
 ) -> User:
+
+    # 先去 Redis 查一下这个 token 是否在黑名单里
+    redis = request.app.state.redis
+    if await redis.get(f"blacklist:{token}"):
+        raise HTTPException(status_code=401, detail="Token 已失效，请重新登录")
+
     """获取当前登录用户"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

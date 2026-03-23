@@ -47,6 +47,17 @@ services:
     volumes:
       - redis_data:/data
 
+  celery_worker:
+    build: .
+    command: celery -A app.celery_worker worker --loglevel=info --pool=gevent
+    container_name: policy_celery
+    restart: always
+    depends_on:
+      - redis
+      - db
+    volumes:
+      - .:/app
+
 volumes:
   postgres_data:
   redis_data:

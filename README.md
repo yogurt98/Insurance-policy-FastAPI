@@ -1,72 +1,73 @@
 # Policy Management API
 
-**一个生产级的加拿大保险保单管理系统**，专为 Sun Life / Manulife / Definity 等保险公司设计。
+**A production-grade insurance policy management system** designed specifically for Canadian insurers such as Sun Life, Manulife, and Definity.
 
-## 项目亮点
+## Project Highlights
 
-- **FastAPI + PostgreSQL** 异步高性能后端
-- **JWT 认证 + 角色权限控制**（Admin / Underwriter）
-- **完整 CRUD 操作** + **批量导入**（支持 10万+ 条 CSV/JSON）
-- **保险业务规则校验**：反欺诈检查、OSFI 合规字段自动生成
-- **Docker 一键部署**
-- 符合加拿大保险监管（OSFI）场景设计
+- High-performance asynchronous backend built with **FastAPI + PostgreSQL**
+- **JWT Authentication** with role-based access control (Admin / Underwriter)
+- Full **CRUD operations** on policies + **bulk import** supporting 100,000+ records (CSV/JSON)
+- Built-in **insurance business rule validation**: anti-fraud engine and automatic OSFI compliance flag generation
+- **Docker one-click deployment**
+- Designed to align with Canadian insurance regulatory requirements (OSFI)
 
-### 技术栈
+## Tech Stack
 - **Backend**: FastAPI, Uvicorn, SQLAlchemy 2.0, Alembic
-- **Database**: PostgreSQL (Async)
-- **Auth**: JWT (PyJWT + bcrypt)
-- **Validation**: Pydantic v2
+- **Database**: PostgreSQL (asynchronous)
+- **Authentication**: JWT (PyJWT + bcrypt)
+- **Validation & Schema**: Pydantic v2
 - **Deployment**: Docker + docker-compose
-- **Data Processing**: Pandas（批量导入）
+- **Data Processing**: Pandas (for bulk import)
 
 ---
 
-## 快速启动
+## Quick Start
 
 ```bash
-# 1. 克隆项目
+# 1. Clone the repository
 git clone <your-repo-url>
 cd policy-management-api
 
-# 2. 启动服务
+# 2. Start the services
 docker-compose up --build -d
 
-# 3. 打开 Swagger 文档
+# 3. Open Swagger documentation
 http://localhost:8000/docs
 ```
 
-## 环境变量
-复制 .env.example 为 .env 并根据需要修改。
+## Environment Variables
+.env
 
-## API 主要功能
-- **认证**
+## Main API Features
+### Authentication
 
-POST /api/v1/auth/register — 用户注册
-POST /api/v1/auth/login — 用户登录
+- POST /api/v1/auth/register — User registration
+- POST /api/v1/auth/login — User login
 
-- **保单管理**
+### Policy Management
 
-POST /api/v1/policies/ — 创建保单（带反欺诈校验）
-GET /api/v1/policies/ — 查询保单列表
-GET /api/v1/policies/{id} — 查询单个保单
-PUT /api/v1/policies/{id} — 更新保单
-DELETE /api/v1/policies/{id} — 删除保单（仅 Admin）
+- POST /api/v1/policies/ — Create policy (with anti-fraud validation)
+- GET /api/v1/policies/ — List policies
+- GET /api/v1/policies/{id} — Get single policy
+- PUT /api/v1/policies/{id} — Update policy
+- DELETE /api/v1/policies/{id} — Delete policy (Admin only)
 
-- **批量导入（核心功能）**
+### Bulk Import (Core Feature)
 
-POST /api/v1/policies/bulk-upload — 支持 CSV / JSON 大文件上传（10万条级别）
+- POST /api/v1/policies/bulk-upload — Upload large CSV/JSON files (supports 100,000+ records)
 
+### Insurance Business Features
 
-- **保险业务特性**
-
-反欺诈规则引擎：风险分数、异常高保费自动标记 flag / review
-OSFI 合规：自动生成 OSFI-YYYY-XXXXXX 标识
-精确金额处理：使用 Numeric(precision=2) 保存保费
-角色权限：Underwriter 可创建/查看，Admin 可删除
-
+- Anti-fraud rule engine: automatic flagging (flag / review) based on risk score and abnormal premium
+- OSFI compliance: auto-generation of OSFI-YYYY-XXXXXX identifier
+- Precise premium handling: stored as Numeric(precision=2)
+- Role-based access: Underwriter can create/view, Admin can delete
 
 
-Postman Collection
-项目根目录已提供 postman_collection.json，可直接导入测试所有接口。
-License
-MIT License
+
+## Postman Collection
+- A complete Postman collection is provided in the project root: postman_collection.json.
+- Import it directly into Postman to test all endpoints.
+
+## License
+- MIT License

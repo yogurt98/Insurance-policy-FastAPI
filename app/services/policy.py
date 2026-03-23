@@ -14,6 +14,7 @@ from app.models.policy import Policy
 from app.schemas.policy import PolicyCreate, PolicyUpdate
 from app.utils.validators import validate_policy_data
 from loguru import logger
+from app.tasks import send_policy_created_notification
 
 
 class PolicyService:
@@ -166,6 +167,7 @@ class PolicyService:
             db.add(db_policy)
             await db.commit()
             await db.refresh(db_policy)
+            send_policy_created_notification.delay(db_policy.id, request_id_var.get("no-request-id"))
             return db_policy
 
         except HTTPException:
