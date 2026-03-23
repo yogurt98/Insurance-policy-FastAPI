@@ -46,11 +46,10 @@ A live demo is deployed on Render (free tier):
 🔗 https://insurance-policy-fastapi.onrender.com/docs
 
 - Swagger UI: https://insurance-policy-fastapi.onrender.com/docs
-- Redoc: https://insurance-policy-fastapi.onrender.com/redoc
 - Note: Render free tier may sleep after inactivity (first request ~30s delay)
 
 (If the demo link is down, feel free to deploy your own fork using the Render button below or follow the guide in the Deployment section.)
-<img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render">
+
 
 
 
@@ -91,7 +90,7 @@ A live demo is deployed on Render (free tier):
 3. Connect your forked GitHub repo 
 4. Choose Docker runtime 
 5. Set environment variables (from .env.example)
-- DATABASE_URL: Use Render's PostgreSQL addon (free tier available)
+- DATABASE_URL: Use Render's PostgreSQL addon (free tier available). Use **postgresql+asyncpg://** not **postgres://**
 - SECRET_KEY: Generate a strong key
 
 6. Deploy → Wait 5–10 minutes
