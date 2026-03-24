@@ -16,9 +16,52 @@
 - **Business Logic Integration**: Built-in anti-fraud engine and automatic OSFI compliance flag generation.
 - **Production-Ready Observability**: Structured logging with Correlation IDs, RFC 7807 problem details, and request rate-limiting.
 - **Fully Containerized**: Docker & Docker Compose setup for one-click local deployment.
+---
+## System Architecture
+```mermaid
+flowchart TD
+    %% 外部客户端
+    Client[Client / Frontend] 
+    
+    %% FastAPI 主应用
+    subgraph FastAPI ["FastAPI Application"]
+        API[FastAPI Routes\n+ Dependencies]
+        Auth[JWT Auth\n+ Role Check]
+        Validation[Business Validation\nAnti-Fraud + OSFI]
+    end
 
-![architecture.drawio.png](architecture.drawio.png)
+    %% 数据库
+    subgraph Databases ["Databases & Cache"]
+        PG[(PostgreSQL\nMain Database)]
+        Redis[(Redis\nCache + Token Blacklist)]
+    end
 
+    %% 异步任务
+    subgraph Celery ["Celery Worker"]
+        Tasks[Celery Tasks\n- Policy Notification\n- Audit Logging\n- External Sync]
+    end
+
+    %% 数据流向
+    Client --> API
+    API --> Auth
+    API --> Validation
+    API <--> PG
+    API <--> Redis
+    API -->|Async Task| Tasks
+    Tasks <--> PG
+    Tasks <--> Redis
+
+    %% 样式
+    classDef api fill:#00a393,stroke:#fff,color:#fff
+    classDef db fill:#336791,stroke:#fff,color:#fff
+    classDef cache fill:#dc382d,stroke:#fff,color:#fff
+    classDef task fill:#37814a,stroke:#fff,color:#fff
+
+    class API,Auth,Validation api
+    class PG db
+    class Redis cache
+    class Tasks task
+```
 ---
 
 ## Tech Stack
