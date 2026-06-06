@@ -1,1 +1,39 @@
 .env.example
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Virtual Environment
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Terraform
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.pem
+
+# Logs
+*.log
+
+# Local database files
+*.db
+
+# AWS
+*.pem

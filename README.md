@@ -1,66 +1,88 @@
 # 🛡️ Insurance Policy Management API
 
 ![CI Pipeline](https://github.com/yogurt98/Insurance-policy-FastAPI/actions/workflows/ci.yml/badge.svg)
+
 ![Python 3.11](https://img.shields.io/badge/Python-3.11-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-00a393.svg)
+
+![AWS EC2](https://img.shields.io/badge/AWS-EC2-FF9900?logo=amazonaws&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-623CE4?logo=terraform&logoColor=white)
+
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-Orchestration-2496ED?logo=docker&logoColor=white)
+
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)
 ![Redis](https://img.shields.io/badge/Redis-7-dc382d.svg)
+
+![Celery](https://img.shields.io/badge/Celery-Task_Queue-37814A?logo=celery&logoColor=white)
+
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
 
 **A production-grade insurance policy management system** designed specifically for Canadian insurers such as Sun Life, Manulife, and Definity.
 
 ## Project Highlights
 
-- **High-Performance Async Backend**: Powered by FastAPI, Uvicorn, and async SQLAlchemy 2.0.
-- **Enterprise Security**: JWT Authentication with Role-Based Access Control (Admin vs. Underwriter).
-- **High-Volume Processing**: Bulk import functionality supporting 100,000+ records via CSV/JSON using Pandas and background tasks.
-- **Business Logic Integration**: Built-in anti-fraud engine and automatic OSFI compliance flag generation.
-- **Production-Ready Observability**: Structured logging with Correlation IDs, RFC 7807 problem details, and request rate-limiting.
-- **Fully Containerized**: Docker & Docker Compose setup for one-click local deployment.
+- **Cloud-Native Deployment:** Infrastructure provisioned with Terraform and deployed on AWS EC2 using Docker Compose.
+- **High-Performance Async Backend:** Built with FastAPI, Uvicorn, and async SQLAlchemy 2.0 for scalable API performance.
+- **Enterprise Security:** JWT Authentication with Role-Based Access Control (Admin vs. Underwriter).
+- **Insurance Business Logic:** Integrated anti-fraud validation, OSFI compliance tracking, and policy lifecycle management.
+- **High-Volume Data Processing:** Supports 100,000+ policy records through bulk CSV/JSON ingestion with Pandas and Celery background tasks.
+- **Production-Ready Engineering:** GitHub Actions CI/CD, structured logging, Redis caching, and containerized deployment with Docker.
 ---
 ## System Architecture
 ```mermaid
 flowchart TD
-    %% 外部客户端
-    Client[Client / Frontend] 
-    
-    %% FastAPI 主应用
-    subgraph FastAPI ["FastAPI Application"]
-        API[FastAPI Routes\n+ Dependencies]
-        Auth[JWT Auth\n+ Role Check]
-        Validation[Business Validation\nAnti-Fraud + OSFI]
+    Dev["Developer / Local Machine"]
+    GitHub["GitHub Repository"]
+    TF["Terraform IaC"]
+
+    subgraph AWS["AWS Cloud"]
+        SG["Security Group<br/>Inbound: 22, 80, 8000"]
+        EC2["Amazon EC2 Instance<br/>Amazon Linux 2023"]
+
+        subgraph Docker["Docker Compose Runtime"]
+            API["FastAPI Application<br/>Swagger UI / REST API"]
+            DB[("PostgreSQL<br/>Policy Database")]
+            Redis[("Redis<br/>Cache & Token Blacklist")]
+            Celery["Celery Worker<br/>Background Tasks"]
+        end
     end
 
-    %% 数据库
-    subgraph Databases ["Databases & Cache"]
-        PG[(PostgreSQL\nMain Database)]
-        Redis[(Redis\nCache + Token Blacklist)]
-    end
+    User["User / API Client"]
 
-    %% 异步任务
-    subgraph Celery ["Celery Worker"]
-        Tasks[Celery Tasks\n- Policy Notification\n- Audit Logging\n- External Sync]
-    end
+    Dev -->|"terraform init / apply"| TF
+    TF -->|"provisions"| SG
+    TF -->|"provisions"| EC2
+    EC2 -->|"git clone"| GitHub
+    EC2 -->|"docker compose up -d --build"| Docker
 
-    %% 数据流向
-    Client --> API
-    API --> Auth
-    API --> Validation
-    API <--> PG
-    API <--> Redis
-    API -->|Async Task| Tasks
-    Tasks <--> PG
-    Tasks <--> Redis
+    User -->|"HTTP :8000<br/>/docs & API requests"| SG
+    SG --> EC2
+    EC2 --> API
 
-    %% 样式
-    classDef api fill:#00a393,stroke:#fff,color:#fff
-    classDef db fill:#336791,stroke:#fff,color:#fff
-    classDef cache fill:#dc382d,stroke:#fff,color:#fff
-    classDef task fill:#37814a,stroke:#fff,color:#fff
+    API <-->|"async SQLAlchemy"| DB
+    API <-->|"cache / blacklist"| Redis
+    API -->|"send background jobs"| Celery
+    Celery <-->|"read / write tasks"| DB
+    Celery <-->|"broker / result backend"| Redis
 
-    class API,Auth,Validation api
-    class PG db
+    classDef dev fill:#2f3542,stroke:#ffffff,color:#ffffff
+    classDef cloud fill:#ff9900,stroke:#ffffff,color:#ffffff
+    classDef infra fill:#57606f,stroke:#ffffff,color:#ffffff
+    classDef app fill:#00a393,stroke:#ffffff,color:#ffffff
+    classDef db fill:#336791,stroke:#ffffff,color:#ffffff
+    classDef cache fill:#dc382d,stroke:#ffffff,color:#ffffff
+    classDef worker fill:#37814a,stroke:#ffffff,color:#ffffff
+    classDef user fill:#1e90ff,stroke:#ffffff,color:#ffffff
+
+    class Dev,GitHub dev
+    class TF,SG infra
+    class AWS,EC2 cloud
+    class API app
+    class DB db
     class Redis cache
-    class Tasks task
+    class Celery worker
+    class User user
 ```
 ---
 
@@ -73,7 +95,12 @@ flowchart TD
 - **Caching**: Redis + fastapi-cache
 - **Async Tasks**: Celery + Redis (event-driven notifications)
 - **Testing**: pytest
-- **Deployment**: Docker, Render (demo)
+- **Deployment**:
+  Docker
+  Docker Compose
+  Terraform
+  AWS EC2
+  Render
 
 ---
 
@@ -169,6 +196,67 @@ A GitHub Actions workflow is triggered on every push and pull request to the **m
 - Import it directly into Postman to test all endpoints.
 ![img_1.png](img_1.png)
 ---
+
+## AWS Deployment with Terraform
+
+This project includes Infrastructure as Code (IaC) deployment using Terraform on AWS.
+
+### Provisioned AWS Resources
+
+- Amazon EC2
+- Security Group
+- Docker Runtime
+- Docker Compose Deployment
+
+### Deployed Services
+
+- FastAPI Application
+- PostgreSQL Database
+- Redis Cache
+- Celery Worker
+
+### Architecture
+
+```text
+Terraform
+    │
+    ▼
+AWS EC2
+    │
+    ├── FastAPI API
+    ├── PostgreSQL
+    ├── Redis
+    └── Celery
+```
+
+### Deployment
+
+```bash
+cd terraform
+
+terraform init
+
+terraform apply
+```
+
+### Access API Documentation
+
+```text
+http://<EC2_PUBLIC_IP>:8000/docs
+```
+
+### Cleanup
+
+```bash
+terraform destroy
+```
+
+### Example Deployment
+
+The application has been successfully deployed on AWS EC2 using Terraform and Docker Compose.
+
+Swagger UI:
+![aws-swagger-ui.png](aws-swagger-ui.png)
 ## Deployment Guide (Render Free Tier)
 1. Fork this repo to your GitHub 
 2. Go to https://render.com → New → Web Service 
